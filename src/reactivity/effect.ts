@@ -85,7 +85,6 @@ export function trigger(target, key) {
   }
 }
 
-let activeEffect
 export function effect(fn, options: any = {}) {
   // fn
   const _effect = new ReactiveEffect(fn, options.scheduler)
