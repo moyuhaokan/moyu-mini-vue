@@ -1,7 +1,7 @@
 /** @format */
 
-import { effect, stop } from '../effect'
-import { reactive } from '../reactive'
+import {effect, stop} from '../effect'
+import {reactive} from '../reactive'
 
 describe('effect', () => {
   it('happy path', () => {
@@ -21,84 +21,83 @@ describe('effect', () => {
     expect(nextAge).toBe(12)
   })
 
-  it("should return runner when call effect", () => {
+  it('should return runner when call effect', () => {
     // 当调用 runner 的时候可以重新执行 effect.run
     // runner 的返回值就是用户给的 fn 的返回值
-    let foo = 0;
+    let foo = 0
     const runner = effect(() => {
-      foo++;
-      return foo;
-    });
-
-    expect(foo).toBe(1);
-    runner();
-    expect(foo).toBe(2);
-    expect(runner()).toBe(3);
-  });
-
-  it("scheduler", () => {
-    let dummy;
-
-    let run: any;
-
-    const scheduler = jest.fn(() => {
-      run = runner;
+      foo++
+      return foo
     })
-    const obj = reactive({ foo: 1 });
-    const runner = effect(
-      () => {
-        dummy = obj.foo;
 
-      },
-      { scheduler }
-    )
-
-    expect(scheduler).not.toHaveBeenCalled();
-    expect(dummy).toBe(1);
-
-    obj.foo++;
-    expect(scheduler).toHaveBeenCalledTimes(1);
-
-    expect(dummy).toBe(1);
-    run();
-    expect(dummy).toBe(2);
+    expect(foo).toBe(1)
+    runner()
+    expect(foo).toBe(2)
+    expect(runner()).toBe(3)
   })
 
-  it("stop", () => {
-    let dummy;
-    const obj = reactive({ prop: 1 });
+  it('scheduler', () => {
+    let dummy
+
+    let run: any
+
+    const scheduler = jest.fn(() => {
+      run = runner
+    })
+    const obj = reactive({foo: 1})
+    const runner = effect(
+      () => {
+        dummy = obj.foo
+      },
+      {scheduler}
+    )
+
+    expect(scheduler).not.toHaveBeenCalled()
+    expect(dummy).toBe(1)
+
+    obj.foo++
+    expect(scheduler).toHaveBeenCalledTimes(1)
+
+    expect(dummy).toBe(1)
+    run()
+    expect(dummy).toBe(2)
+  })
+
+  it('stop', () => {
+    let dummy
+    const obj = reactive({prop: 1})
     const runner = effect(() => {
-      dummy = obj.prop;
+      dummy = obj.prop
     })
 
-    obj.prop = 2;
-    expect(dummy).toBe(2);
-    stop(runner);
-    obj.prop = 3;
-    expect(dummy).toBe(2);
+    obj.prop = 2
+    expect(dummy).toBe(2)
+    stop(runner)
+    // obj.prop = 3;
+    obj.prop++
+    expect(dummy).toBe(2)
 
-
-    runner();
+    runner()
     expect(dummy).toBe(3)
   })
 
-  it("onStop", () => {
+  it('onStop', () => {
     const obj = reactive({
-      foo: 1
+      foo: 1,
     })
 
-    const onStop = jest.fn();
-    let dummy;
+    const onStop = jest.fn()
+    let dummy
     const runner = effect(
       () => {
-        dummy = obj.foo;
+        dummy = obj.foo
       },
       {
         onStop,
       }
-    );
+    )
 
-    stop(runner);
-    expect(onStop).toBeCalledTimes(1);
+    stop(runner)
+    expect(onStop).toBeCalledTimes(1)
   })
 })
